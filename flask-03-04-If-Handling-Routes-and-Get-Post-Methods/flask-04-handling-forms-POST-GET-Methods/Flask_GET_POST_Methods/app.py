@@ -33,7 +33,7 @@ def calculate():
         # lcm, result1, result2, developer_name
         num1 = int(request.form.get("number1"))
         num2 = int(request.form.get("number2"))
-        lcm_caluclated = num1 * num2
+        lcm_caluclated = lcm(num1 , num2)
         return render_template("result.html", lcm=lcm_caluclated, result1=num1, result2=num2, developer_name="Adam")
 # Add a statement to run the Flask application which can be debugged.
 if __name__== "__main__":
