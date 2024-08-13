@@ -33,7 +33,7 @@ def login():
     else:
         typed_username=request.form.get("username")
         typed_password=request.form.get("password")
-        if typed_password == "clarusway":
+        if typed_password == "qweerty123":
             return render_template("secure.html",user= typed_username)
         else:
             return render_template("login.html", user=typed_username, control = True)
