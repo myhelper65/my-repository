@@ -1,7 +1,7 @@
-#! /bin/bash  -x
+#! /bin/bash
 dnf update -y
 dnf install httpd -y
-FOLDER=https://github.com/myhelper65/my-repository/blob/main/101-kittens-carousel-static-website-ec2/101-kittens-carousel-static-website-ec2/static-web
+FOLDER="https://raw.githubusercontent.com/awsdevopsteam/101-cfn-static-website-ec2/master/static-web"
 cd /var/www/html
 wget ${FOLDER}/index.html
 wget ${FOLDER}/cat0.jpg

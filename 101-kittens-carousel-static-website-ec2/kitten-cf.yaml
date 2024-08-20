@@ -1,35 +1,30 @@
 AWSTemplateFormatVersion: 2010-09-09
-
-Description: |
-  Create static website for kittens carousel
-
-# Parameters:
-
+Description: create static website for kittens crousel
 Resources:
   rSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: KittensSecGroup
-      GroupDescription: Allow SSH and HTTP # Required
-      SecurityGroupIngress:
+      GroupDescription: "Allow SSh and HTTP" # Required
+      GroupName: "KittensSecGroup"
+      SecurityGroupIngress: #Ingress inbound rules
         - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
 
-  rWebServer:
+  LogicalID:
     Type: AWS::EC2::Instance
     Properties:
       Tags:
         - Key: Name
-          Value: kitten-cat-web-server
+          Value: Ali-test-kitten-web1
       ImageId: ami-066784287e358dad1
       InstanceType: t2.micro
-      KeyName: ali-ec2-linus
+      KeyName: ec2-li-linus
       SecurityGroupIds:
         - !GetAtt rSecurityGroup.GroupId
       UserData: "String"
