@@ -37,7 +37,7 @@ WebServer:
   Properties:
     ImageId: !Ref LatestAmiId
     InstanceType: !Ref InstanceTypes
-    KeyName: "String"
+    KeyName: !Ref Keypair
     SecurityGroupIds:
       - !GetAtt WebServerSecurityGroup.GroupId
     UserData: "String"
