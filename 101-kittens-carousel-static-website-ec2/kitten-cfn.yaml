@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  create a kitten website
+  
+# Parameters:
+   
+Resources:
+  rSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow SSH and HTTP" # Required
+      GroupName: "KittenSecurityGroup"
+      SecurityGroupIngress: 
+        - CidrIp: 0.0.0.0/0
+          Description: "kitten cat tcp"
+          FromPort: 22
+          ToPort: 22
+          IpProtocol: tcp
+        - CidrIp: 0.0.0.0/0
+          Description: "kitten cat http"
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp  
+         
+      Tags: 
+        - Key: Adams
+          Value: kittens
+  rWebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags: 
+        - Key: Name
+          Value: Kitten-ec2-webserver
+      ImageId: ami-066784287e358dad1 
+      InstanceType: t2.micro
+      KeyName: ec2-ali-linus
+      SecurityGroupIds: 
+        -  !GetAtt rSecurityGroup.GroupId
+      UserData: 
+       Fn::Base64: 
+          |
+            #! /bin/bash -x
+
+            yum update -y
+            yum install httpd -y
+
+            cd  /var/www/html
+
+            FOLDER=https://raw.githubusercontent.com/myhelper65/my-repository/main/101-kittens-carousel-static-website-ec2/static-web
+
+            wget ${FOLDER}/index.html
+            wget ${FOLDER}/cat0.jpg
+            wget ${FOLDER}/cat1.jpg
+            wget ${FOLDER}/cat2.jpg
+
+            systemctl start httpd
+            systemctl enable httpd
+
+            cat /var/log/cloud-init-output.log  > /home/ec2-user/kittenlog.txt  
+Outputs:
+  WebURL:
+    Description: Url for website
+    Value: !Join ["", ["http://", !GetAtt rWebServer.PublicDnsName ] ]
+     
