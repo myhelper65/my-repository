@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Build Roman numerals application CF
+  
+Parameters:
+
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64
+
+  InstanceTypes:
+    Description: EC2 instance types CF
+    Type: String
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+    Default: t2.micro
+
+  Keypair:
+    Description: Keypair for ec2 instance-CF
+    Type: AWS::EC2::KeyPair::KeyName
+     
+
+Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and SSH-CF
+      GroupName: HTTPandSHH
+      SecurityGroupIngress: 
+      - Description: Allow HTTP CF
+        CidrIp: 0.0.0.0/0
+        FromPort: 80
+        ToPort: 80
+        IpProtocol: tcp
+      - Description: Allow SSH
+        CidrIp: 0.0.0.0/0
+        FromPort: 22
+        ToPort: 22
+        IpProtocol: tcp
+
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref Keypair
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceTypes
+      SecurityGroupIds: 
+        - !GetAtt WebServerSecurityGroup.GroupId
+      UserData: !Base64 |
+        #!/bin/bash -x
+        yum update -y
+        yum install python3 -y
+        yum install pip -y
+        pip install flask
+
+        cd /home/ec2-user
+
+        FOLDER="https://raw.githubusercontent.com/myhelper65/my-repository/main/001-roman-numerals-converter"
+        wget ${FOLDER}/app.py
+        mkdir templates
+        cd templates
+
+        wget ${FOLDER}/templates/index.html
+        wget ${FOLDER}/templates/result.html
+
+        cd ..
+        python3 app.py
+      Tags: 
+        - Key: Name
+          Value: roman-numerals-webserver CF
+
+    
+
+Outputs:
+  WebsiteURL:
+    Description: URL for website
+    Value: !Join ["", ["http://", !GetAtt WebServer.PublicDnsName]]
+ 
